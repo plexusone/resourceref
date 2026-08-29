@@ -48,8 +48,18 @@ schemas. The reference becomes the join key.
 - **`scheme`** — the engine for defining *owned* URI schemes as data: a
   `Profile` describes a SPIFFE-strict URI subset, an authority (namespace
   owner) registry, per-authority path shapes, resource-type registries,
-  and version/alias suffix grammar (`@prod`, `@14`). Namespace owners
-  publish their own profile — this module ships none.
+  and version/alias suffix grammar (`@prod`, `@14`). `Load` parses and
+  structurally validates a profile document; `Profile.Validate` and
+  `Profile.Split` check a `ResourceRef` against it and, for `Split`,
+  return its typed decomposition (`Parts`). Namespace owners publish their
+  own profile — this module ships none, only a reference test fixture.
+- **`schema`** — the generated JSON Schema for the `Profile` format and a
+  ready-to-embed fragment for a `ResourceRef`-typed field, for external
+  tooling and other IRs' schemas.
+
+See [docs/embedding.md](docs/embedding.md) for how to add a reference
+field to your own IR — Go type, JSON Schema, and the logical-vs-instance
+identity pitfall to avoid.
 
 ## What this module deliberately does not do
 
