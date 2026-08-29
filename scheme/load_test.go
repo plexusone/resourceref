@@ -18,8 +18,8 @@ const validMinimalProfile = `{
 		"segmentPattern": "^[a-z][a-z0-9_-]*$"
 	},
 	"authorities": [
-		{"name": "plexusone", "description": "PlexusOne, Inc."},
-		{"name": "productbuildershq"}
+		{"name": "acme", "description": "Acme Corp"},
+		{"name": "opensource"}
 	],
 	"shapes": [
 		{
@@ -40,7 +40,7 @@ const validMinimalProfile = `{
 		}
 	],
 	"resourceTypes": [
-		{"authority": "plexusone", "app": "dashforge", "types": ["notebook", "workflow"]}
+		{"authority": "acme", "app": "billing", "types": ["invoice", "shipment"]}
 	],
 	"version": {
 		"separator": "@",

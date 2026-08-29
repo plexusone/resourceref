@@ -1,11 +1,11 @@
 # Embedding resourceref in an IR
 
-This guide is for anyone authoring a JSON IR or Go type — a PRISM/PBHQ
-build artifact, a threat-model document, a signal-spec event, a forge's
-API schema — that needs to reference another resource: a repo, a service,
-an agent, a workflow run, a roadmap item. It covers three things: how to
-add a reference field, how to represent one in a JSON Schema, and how to
-avoid the identity mistake this module exists to prevent.
+This guide is for anyone authoring a JSON IR or Go type — a build
+artifact, a threat-model document, a telemetry event, a service's API
+schema — that needs to reference another resource: a repo, a service, an
+agent, a workflow run, a ticket. It covers three things: how to add a
+reference field, how to represent one in a JSON Schema, and how to avoid
+the identity mistake this module exists to prevent.
 
 ## The one rule
 
@@ -16,9 +16,9 @@ avoid the identity mistake this module exists to prevent.
 Don't invent a `resource_id` string convention for your IR. If the thing
 you're referencing already has a canonical URI (a GitHub repo, an AWS
 resource, a SPIFFE workload identity), use that URI directly. Only reach
-for an owned scheme — PlexusOne's `prn` scheme, defined in
-[plexusone-standards](https://github.com/plexusone/plexusone-standards),
-not in this module — when the resource has no other canonical identity.
+for an owned scheme — one you define yourself with the `scheme` package,
+this module ships no scheme of its own — when the resource has no other
+canonical identity.
 
 ## Adding a reference field to a Go type
 
@@ -39,7 +39,7 @@ type BuildArtifact struct {
   it encodes as a plain JSON string with no extra code:
 
   ```json
-  {"id": "art_1", "sourceRepo": "https://github.com/plexusone/dashforge"}
+  {"id": "art_1", "sourceRepo": "https://github.com/acme/billing-service"}
   ```
 
 - **A required reference is `ResourceRef`; an optional one is
@@ -129,22 +129,22 @@ Separate them into distinct resource types, connected by a relationship
 field:
 
 ```text
-prn://plexusone/dashforge/org_7f3/notebook/nb_churn        the conceptual notebook
-prn://plexusone/dashforge/org_7f3/notebook-run/run_abc123  one specific run of it
-https://github.com/plexusone/dashforge                     its source repository
+prn://acme/billing/org_7f3/invoice/inv_9c3        the conceptual invoice
+prn://acme/billing/org_7f3/invoice-run/run_abc123 one specific computation of it
+https://github.com/acme/billing-service            its source repository
 ```
 
-A build artifact referencing "the notebook that produced me" should carry
-a `notebookRunPrn` (the specific run — reproducible, immutable), not a
-`notebookPrn` (the conceptual notebook, which has no fixed inputs/outputs
-on its own). A deployment status referencing "what code is running" should
+A build artifact referencing "the invoice that produced me" should carry
+an `invoiceRunPrn` (the specific run — reproducible, immutable), not an
+`invoicePrn` (the conceptual invoice, which has no fixed inputs/outputs on
+its own). A deployment status referencing "what code is running" should
 point at a repository URL or a versioned artifact reference, not at a
 mutable "current service" identifier that means something different every
 time someone looks at it.
 
 Field-naming convention: suffix reference fields with what kind of
 resource they point to, not with generic terms like `Ref` or `ID` alone —
-`sourceRepo`, `notebookRunPrn`, `deployedServicePrn`. A reader (or an
+`sourceRepo`, `invoiceRunPrn`, `deployedServicePrn`. A reader (or an
 agent) should be able to tell what's on the other end of a reference field
 from its name alone, before resolving it.
 
@@ -153,8 +153,8 @@ from its name alone, before resolving it.
 `ResourceRef` alone is enough for lineage, audit trails, and "what does
 this point to" fields — anywhere a reference is read but never
 structurally validated or acted on. If your IR needs to *constrain* which
-references are valid (only PlexusOne's own resources, only specific
-resource types, only versioned/pinned references) or *decompose* a
+references are valid (only your own organization's resources, only
+specific resource types, only versioned/pinned references) or *decompose* a
 reference into typed fields (which org, which app, which resource type),
 that's what the `scheme` subpackage's `Profile` format is for — see
 [`scheme/profile.go`](../scheme/profile.go) and the reference profile in

@@ -4,7 +4,7 @@ package scheme
 // fixed path segments one of these roles; [Parts] has one field per role.
 const (
 	// RoleApp identifies the owning application segment of a tenant-scoped
-	// shape (for example "dashforge" in a PlexusOne PRN).
+	// shape (for example "billing" in a tenant-scoped reference).
 	RoleApp = "app"
 	// RoleOrg identifies the tenancy segment of a tenant-scoped shape.
 	RoleOrg = "org"
@@ -17,9 +17,9 @@ const (
 	RoleID = "id"
 )
 
-// A Profile describes an owned URI scheme as data: PlexusOne's "prn"
-// scheme is one instance of this format, defined in plexusone-standards,
-// not in this package.
+// A Profile describes an owned URI scheme as data. This package ships no
+// specific scheme instance — defining one (its authorities, path shapes,
+// and resource types) is left entirely to whoever adopts it.
 //
 // Profile is the Go-first source of truth for the generated JSON Schema
 // embedded in the schema subpackage — field documentation here becomes
@@ -76,7 +76,7 @@ type URISubset struct {
 
 // An Authority is a registered namespace owner permitted as the host
 // component of a reference under a [Profile]'s scheme, for example
-// "plexusone" or "productbuildershq".
+// "acme" or "contoso".
 type Authority struct {
 	// Name is the authority's URI host value.
 	Name string `json:"name"`
@@ -132,9 +132,9 @@ type VersionGrammar struct {
 	// grammar at all.
 	Separator string `json:"separator,omitempty"`
 	// Required, when true, means every reference to an invocable resource
-	// under this scheme must carry a version or alias suffix — consumers
-	// (for example crossforge) enforce this for invocation targets, this
-	// package only records the policy.
+	// under this scheme must carry a version or alias suffix — an
+	// invocation layer built on this package enforces that for its
+	// targets; this package only records the policy.
 	Required bool `json:"required,omitempty"`
 	// VersionPattern is a regular expression matching an immutable
 	// version token.

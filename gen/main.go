@@ -33,8 +33,8 @@ func generateProfileSchema() {
 	s.ID = "https://raw.githubusercontent.com/plexusone/resourceref/main/schema/profile.schema.json"
 	s.Title = "resourceref Scheme Profile"
 	s.Description = "Data-driven definition of an owned URI scheme (resourceref/scheme.Profile). " +
-		"A namespace owner's own scheme instance — for example PlexusOne's \"prn\" scheme — " +
-		"is a document conforming to this schema, defined in that owner's standards repository."
+		"A namespace owner's own scheme instance is a document conforming to " +
+		"this schema, defined wherever that owner keeps its own standards."
 	writeSchema("schema/profile.schema.json", s)
 }
 

@@ -8,8 +8,8 @@
     "segmentPattern": "^[A-Za-z][A-Za-z0-9_-]*$"
   },
   "authorities": [
-    {"name": "plexusone", "description": "PlexusOne, Inc. — resourceref reference-profile fixture"},
-    {"name": "productbuildershq", "description": "ProductBuildersHQ — resourceref reference-profile fixture"}
+    {"name": "acme", "description": "Acme Corp — resourceref reference-profile fixture"},
+    {"name": "opensource", "description": "Open Source Project — resourceref reference-profile fixture"}
   ],
   "shapes": [
     {
@@ -30,8 +30,8 @@
     }
   ],
   "resourceTypes": [
-    {"authority": "plexusone", "app": "dashforge", "types": ["notebook", "notebook-run"]},
-    {"authority": "plexusone", "app": "actionforge", "types": ["workflow", "workflow-run"]}
+    {"authority": "acme", "app": "billing", "types": ["invoice", "invoice-run"]},
+    {"authority": "acme", "app": "shipping", "types": ["shipment", "shipment-run"]}
   ],
   "version": {
     "separator": "@",

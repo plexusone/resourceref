@@ -13,8 +13,7 @@ package schema
 import _ "embed"
 
 // ProfileSchema is the generated JSON Schema for a [scheme.Profile]
-// document — what a namespace owner's own scheme instance (for example
-// PlexusOne's "prn" scheme, defined in plexusone-standards) must conform
+// document — what a namespace owner's own scheme instance must conform
 // to.
 //
 //go:embed profile.schema.json

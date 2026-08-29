@@ -74,8 +74,8 @@ func TestCanonicalization(t *testing.T) {
 	}{
 		{
 			name: "scheme and host lowercased, path case preserved",
-			in:   "HTTPS://GitHub.com/plexusone/DashForge",
-			want: "https://github.com/plexusone/DashForge",
+			in:   "HTTPS://GitHub.com/acme/BillingService",
+			want: "https://github.com/acme/BillingService",
 		},
 		{
 			name: "dot segment .. removed",
@@ -193,11 +193,11 @@ func TestCanonicalization(t *testing.T) {
 
 func TestCanonicalizationIdempotent(t *testing.T) {
 	inputs := []string{
-		"HTTPS://GitHub.com/plexusone/DashForge",
+		"HTTPS://GitHub.com/acme/BillingService",
 		"https://example.com/a/b/../c",
 		"https://example.com/%7Euser",
 		"arn:aws:iam::123456789012:role/payment-api",
-		"prn://plexusone/dashforge/org_7f3/notebook/nb_churn@prod",
+		"prn://acme/billing/org_7f3/invoice/inv_9c3@prod",
 	}
 	for _, in := range inputs {
 		r1 := MustParse(in)
@@ -213,12 +213,12 @@ func TestJSONRoundTrip(t *testing.T) {
 		Ref ResourceRef `json:"ref"`
 	}
 
-	w := wrapper{Ref: MustParse("prn://plexusone/dashforge/org_7f3/notebook/nb_churn@prod")}
+	w := wrapper{Ref: MustParse("prn://acme/billing/org_7f3/invoice/inv_9c3@prod")}
 	b, err := json.Marshal(w)
 	if err != nil {
 		t.Fatalf("json.Marshal: %v", err)
 	}
-	const want = `{"ref":"prn://plexusone/dashforge/org_7f3/notebook/nb_churn@prod"}`
+	const want = `{"ref":"prn://acme/billing/org_7f3/invoice/inv_9c3@prod"}`
 	if string(b) != want {
 		t.Fatalf("json.Marshal(w) = %s, want %s", b, want)
 	}

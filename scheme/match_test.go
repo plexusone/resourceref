@@ -22,11 +22,9 @@ func referenceProfile(t *testing.T) *Profile {
 
 // TestSplitGoldenCorpus exercises Profile.Split against the reference
 // profile fixture (scheme/testdata/reference-profile.json) with realistic
-// references drawn from the same examples used throughout the ecosystem's
-// interop design (crossforge's TRD). This is the golden corpus
-// RMI-RESOURCEREF-004 calls for: end-to-end proof that a profile authored
-// against this engine produces the typed decomposition a consumer
-// (crossforge, a forge) actually needs.
+// references covering both shapes it defines: end-to-end proof that a
+// profile authored against this engine produces the typed decomposition
+// a real consumer needs, not just that the fixture parses.
 func TestSplitGoldenCorpus(t *testing.T) {
 	p := referenceProfile(t)
 
@@ -37,47 +35,47 @@ func TestSplitGoldenCorpus(t *testing.T) {
 	}{
 		{
 			name: "tenant-scoped with alias version",
-			ref:  "prn://plexusone/dashforge/org_7f3/notebook/nb_churn@prod",
+			ref:  "prn://acme/billing/org_7f3/invoice/inv_9c3@prod",
 			want: Parts{
-				Authority: "plexusone", App: "dashforge", Org: "org_7f3",
-				ResourceType: "notebook", ID: "nb_churn", Version: "prod",
+				Authority: "acme", App: "billing", Org: "org_7f3",
+				ResourceType: "invoice", ID: "inv_9c3", Version: "prod",
 			},
 		},
 		{
 			name: "tenant-scoped with numeric version",
-			ref:  "prn://plexusone/actionforge/org_7f3/workflow/wf_etl@14",
+			ref:  "prn://acme/shipping/org_7f3/shipment/ship_88a@14",
 			want: Parts{
-				Authority: "plexusone", App: "actionforge", Org: "org_7f3",
-				ResourceType: "workflow", ID: "wf_etl", Version: "14",
+				Authority: "acme", App: "shipping", Org: "org_7f3",
+				ResourceType: "shipment", ID: "ship_88a", Version: "14",
 			},
 		},
 		{
 			name: "tenant-scoped with no version (optional)",
-			ref:  "prn://plexusone/actionforge/org_7f3/workflow-run/run_abc",
+			ref:  "prn://acme/shipping/org_7f3/shipment-run/run_abc",
 			want: Parts{
-				Authority: "plexusone", App: "actionforge", Org: "org_7f3",
-				ResourceType: "workflow-run", ID: "run_abc", Version: "",
+				Authority: "acme", App: "shipping", Org: "org_7f3",
+				ResourceType: "shipment-run", ID: "run_abc", Version: "",
 			},
 		},
 		{
 			name: "ecosystem artifact, single-segment id",
-			ref:  "prn://productbuildershq/roadmap/RMI-142",
+			ref:  "prn://opensource/roadmap/ISSUE-142",
 			want: Parts{
-				Authority: "productbuildershq", ResourceType: "roadmap", ID: "RMI-142",
+				Authority: "opensource", ResourceType: "roadmap", ID: "ISSUE-142",
 			},
 		},
 		{
 			name: "ecosystem artifact, multi-segment rest id",
-			ref:  "prn://productbuildershq/roadmap/phase-1/RMI-142",
+			ref:  "prn://opensource/roadmap/phase-1/ISSUE-142",
 			want: Parts{
-				Authority: "productbuildershq", ResourceType: "roadmap", ID: "phase-1/RMI-142",
+				Authority: "opensource", ResourceType: "roadmap", ID: "phase-1/ISSUE-142",
 			},
 		},
 		{
 			name: "app with no resourceType registry entry is unrestricted",
-			ref:  "prn://plexusone/agentforge/org_1/anything-goes/x",
+			ref:  "prn://acme/support/org_1/anything-goes/x",
 			want: Parts{
-				Authority: "plexusone", App: "agentforge", Org: "org_1",
+				Authority: "acme", App: "support", Org: "org_1",
 				ResourceType: "anything-goes", ID: "x",
 			},
 		},
@@ -109,30 +107,30 @@ func TestValidateRejectsGoldenCorpus(t *testing.T) {
 	}{
 		{
 			name: "wrong scheme",
-			ref:  "https://plexusone/dashforge/org_1/notebook/nb_1",
+			ref:  "https://acme/billing/org_1/invoice/nb_1",
 		},
 		{
 			name: "unregistered authority",
-			ref:  "prn://unknown-authority/dashforge/org_1/notebook/nb_1",
+			ref:  "prn://unknown-authority/billing/org_1/invoice/nb_1",
 		},
 		{
 			name: "resourceType not registered for this app",
-			ref:  "prn://plexusone/dashforge/org_1/bogus-type/x",
+			ref:  "prn://acme/billing/org_1/bogus-type/x",
 		},
 		{
 			name: "version suffix matching neither pattern",
-			ref:  "prn://plexusone/dashforge/org_1/notebook/nb_1@BAD!CHARS",
+			ref:  "prn://acme/billing/org_1/invoice/nb_1@BAD!CHARS",
 		},
 		{
 			name: "query component not permitted",
-			ref:  "prn://plexusone/dashforge/org_1/notebook/nb_1?x=1",
+			ref:  "prn://acme/billing/org_1/invoice/nb_1?x=1",
 		},
 		{
 			// The fixture's two shapes need exactly 4 segments
 			// (tenant-scoped) or at least 2 (ecosystem-artifact, via its
 			// rest segment) — a single segment fits neither.
 			name: "no shape fits a one-segment path",
-			ref:  "prn://plexusone/onlyone",
+			ref:  "prn://acme/onlyone",
 		},
 	}
 
@@ -166,7 +164,7 @@ func TestVersionRequiredPolicy(t *testing.T) {
 	data := []byte(`{
 		"scheme": "prn",
 		"uriSubset": {"allowQuery": false, "allowFragment": false, "allowUserinfo": false, "allowPort": false},
-		"authorities": [{"name": "plexusone"}],
+		"authorities": [{"name": "acme"}],
 		"shapes": [{"name": "s", "segments": [{"role": "resourceType"}, {"role": "id"}]}],
 		"version": {"separator": "@", "required": true, "versionPattern": "^[0-9]+$"}
 	}`)
@@ -175,25 +173,25 @@ func TestVersionRequiredPolicy(t *testing.T) {
 		t.Fatalf("Load: %v", err)
 	}
 
-	if err := p.Validate(resourceref.MustParse("prn://plexusone/notebook/nb_1@1")); err != nil {
+	if err := p.Validate(resourceref.MustParse("prn://acme/invoice/nb_1@1")); err != nil {
 		t.Fatalf("Validate(with version): unexpected error: %v", err)
 	}
-	if err := p.Validate(resourceref.MustParse("prn://plexusone/notebook/nb_1")); !errors.Is(err, ErrNoMatch) {
+	if err := p.Validate(resourceref.MustParse("prn://acme/invoice/nb_1")); !errors.Is(err, ErrNoMatch) {
 		t.Fatalf("Validate(without version, required=true): err = %v, want wrapping ErrNoMatch", err)
 	}
 }
 
 func TestURISubsetComponentsRejected(t *testing.T) {
 	p := referenceProfile(t)
-	valid := "prn://plexusone/dashforge/org_1/notebook/nb_1"
+	valid := "prn://acme/billing/org_1/invoice/nb_1"
 
 	cases := []struct {
 		name string
 		ref  string
 	}{
 		{name: "fragment", ref: valid + "#frag"},
-		{name: "userinfo", ref: "prn://user:pass@plexusone/dashforge/org_1/notebook/nb_1"}, // #nosec G101 -- test URI literal, not a credential
-		{name: "port", ref: "prn://plexusone:8080/dashforge/org_1/notebook/nb_1"},
+		{name: "userinfo", ref: "prn://user:pass@acme/billing/org_1/invoice/nb_1"}, // #nosec G101 -- test URI literal, not a credential
+		{name: "port", ref: "prn://acme:8080/billing/org_1/invoice/nb_1"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -215,7 +213,7 @@ func TestOpaqueReferenceHasNoAuthority(t *testing.T) {
 
 func TestEmptyPathAfterAuthority(t *testing.T) {
 	p := referenceProfile(t)
-	if err := p.Validate(resourceref.MustParse("prn://plexusone")); !errors.Is(err, ErrNoMatch) {
+	if err := p.Validate(resourceref.MustParse("prn://acme")); !errors.Is(err, ErrNoMatch) {
 		t.Fatalf("Validate(authority-only, no path): err = %v, want wrapping ErrNoMatch", err)
 	}
 }
@@ -240,7 +238,7 @@ func TestAuthorityFailingSegmentPattern(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Load: %v", err)
 	}
-	if err := p.Validate(resourceref.MustParse("prn://123bad/notebook/nb_1")); !errors.Is(err, ErrNoMatch) {
+	if err := p.Validate(resourceref.MustParse("prn://123bad/invoice/nb_1")); !errors.Is(err, ErrNoMatch) {
 		t.Fatalf("Validate: err = %v, want wrapping ErrNoMatch", err)
 	}
 }
@@ -262,8 +260,8 @@ func TestVersionSuffixEdgeCases(t *testing.T) {
 		name string
 		ref  string
 	}{
-		{name: "empty segment before separator", ref: "prn://a/notebook/@prod"},
-		{name: "empty suffix after separator", ref: "prn://a/notebook/nb_1@"},
+		{name: "empty segment before separator", ref: "prn://a/invoice/@prod"},
+		{name: "empty suffix after separator", ref: "prn://a/invoice/nb_1@"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -285,7 +283,7 @@ func TestMatchTimeGuardsAgainstHandBuiltProfile(t *testing.T) {
 		Authorities: []Authority{{Name: "a"}},
 		Shapes:      []Shape{{Name: "s", Segments: []SegmentSpec{{Role: RoleResourceType}, {Role: RoleID}}}},
 	}
-	if err := segPattern.Validate(resourceref.MustParse("prn://a/notebook/nb_1")); !errors.Is(err, ErrInvalidProfile) {
+	if err := segPattern.Validate(resourceref.MustParse("prn://a/invoice/nb_1")); !errors.Is(err, ErrInvalidProfile) {
 		t.Fatalf("Validate with bad segmentPattern: err = %v, want wrapping ErrInvalidProfile", err)
 	}
 
@@ -295,7 +293,7 @@ func TestMatchTimeGuardsAgainstHandBuiltProfile(t *testing.T) {
 		Shapes:      []Shape{{Name: "s", Segments: []SegmentSpec{{Role: RoleResourceType}, {Role: RoleID}}}},
 		Version:     VersionGrammar{Separator: "@", VersionPattern: "(unclosed"},
 	}
-	if err := versionPattern.Validate(resourceref.MustParse("prn://a/notebook/nb_1@1")); !errors.Is(err, ErrInvalidProfile) {
+	if err := versionPattern.Validate(resourceref.MustParse("prn://a/invoice/nb_1@1")); !errors.Is(err, ErrInvalidProfile) {
 		t.Fatalf("Validate with bad versionPattern: err = %v, want wrapping ErrInvalidProfile", err)
 	}
 }

@@ -1,4 +1,4 @@
-# TRD — resourceref — Universal Resource References & the PRN Scheme Engine
+# TRD — resourceref — Universal Resource References & the Scheme Engine
 
 **Initiative:** `INIT-RESOURCEREF-001`
 **Repository:** `github.com/plexusone/resourceref`
@@ -7,11 +7,11 @@
 
 - Module `github.com/plexusone/resourceref`, Go 1.26+, **stdlib-only**
   (generator deps behind `//go:build ignore` + `tools.go`).
-- Leaf of the ecosystem dependency graph: imports nothing from plexusone /
-  grokify / ProductBuildersHQ; everything may import it (specs, crossforge,
-  forges). Never imports crossforge or systemforge.
-- License: permissive (align with the crossforge decision — Apache-2
-  preferred for the patent grant on a spec-like layer).
+- Leaf of the dependency graph: imports nothing beyond the standard
+  library; anything may import it. Never imports an invocation,
+  authorization, or resolver layer built on top of it.
+- License: permissive (Apache-2, for the patent grant on a spec-like
+  layer).
 
 ## Package layout
 
@@ -37,7 +37,7 @@ func (r ResourceRef) String() string                // canonical serialization
 func (r ResourceRef) Scheme() string
 func (r ResourceRef) Equal(o ResourceRef) bool      // canonical comparison
 // encoding.TextMarshaler/Unmarshaler + json round-trip as a plain string:
-// {"ref": "prn://plexusone/dashforge/org_7f3/notebook/nb_x@prod"}
+// {"ref": "prn://acme/billing/org_7f3/invoice/inv_x@prod"}
 ```
 
 - Canonicalization: lowercase scheme/authority, no default-port trickery,
@@ -54,8 +54,7 @@ Profile
 ├── scheme            e.g. "prn"
 ├── uriSubset         SPIFFE-strict constraints: no query, fragment,
 │                     userinfo, port; allowed charsets per segment
-├── authorities[]     registered namespace owners (e.g. plexusone,
-│                     productbuildershq, grokify)
+├── authorities[]     registered namespace owners
 ├── shapes[]          per-authority path shapes, e.g.
 │                     {app}/{org}/{resourceType}/{id}   (tenant-scoped)
 │                     {resourceType}/{path...}          (ecosystem artifact)
@@ -73,32 +72,34 @@ func (p *Profile) Split(r ResourceRef) (Parts, error) // typed segment access
 ```
 
 - The engine matches a ref against the profile's shapes and returns typed
-  parts; consumers (crossforge, forges) never re-parse strings.
-- Profiles compose: an instance repo (plexusone-standards) ships the
-  canonical `prn` profile JSON; consumers embed or vendor it.
+  parts; consumers never re-parse strings.
+- Profiles compose: an adopter's own repository ships the canonical
+  profile JSON for its scheme; consumers embed or vendor it.
 - Version/alias semantics (immutable version vs mutable alias, "pin
-  required" policy) are *expressed* in the profile; *enforced* by consumers
-  (crossforge rejects unversioned invocation targets).
+  required" policy) are *expressed* in the profile; *enforced* by whatever
+  invocation layer a consumer builds on top (e.g. rejecting unversioned
+  invocation targets).
 
 ## Relationship to instances and consumers
 
 ```text
 resourceref (mechanism: Go module + profile format)     ← this repo
     ↑ profile data
-plexusone-standards/resourceref/prn.profile.json (instance: the prn scheme)
+adopter's own scheme instance (e.g. a "prn" profile JSON)
     ↑ imported/embedded by
-crossforge (invocation targets MUST be profile-valid PRNs)
-forges / specs / IRs (ResourceRef fields; PRN where owned)
+an invocation/interop layer (targets MUST be profile-valid references)
+downstream services / specs / IRs (ResourceRef fields; the owned scheme where relevant)
 ```
 
-Mirrors design-system-spec ↔ plexusone-standards/design-system and
-api-style-spec ↔ plexusone-standards/api.
+This module never ships an instance itself — the mechanism/instance split
+is the whole point: this stays a small, stable dependency regardless of
+how many different schemes get built on it.
 
-## Design rules carried from the ideation review
+## Design rules
 
 - Prefer owner-canonical URIs; mint owned URIs only when none exists.
-- Identity is not location: no `github`/provider or DNS-resolvable hosts in
-  owned canonical identities; resolution is a separate layer.
+- Identity is not location: no provider-specific or DNS-resolvable hosts
+  in owned canonical identities; resolution is a separate layer.
 - Logical vs instance identity are separate resource types (service vs
   deployment vs repo), connected by relationship edges in consuming IRs —
   the profile's type registry keeps them distinct.
@@ -109,4 +110,4 @@ api-style-spec ↔ plexusone-standards/api.
   idempotence, external-URI passthrough fidelity (ARN, SPIFFE, https,
   urn:), profile round-trips, fuzz Parse.
 - Schema tests: profile JSON Schema and ResourceRef embedding schema
-  (schemakit-linted camelCase) validate shipped fixtures.
+  (camelCase-linted) validate shipped fixtures.

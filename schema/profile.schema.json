@@ -19,7 +19,7 @@
       "required": [
         "name"
       ],
-      "description": "An Authority is a registered namespace owner permitted as the host component of a reference under a Profile's scheme, for example \"plexusone\" or \"productbuildershq\"."
+      "description": "An Authority is a registered namespace owner permitted as the host component of a reference under a Profile's scheme, for example \"acme\" or \"contoso\"."
     },
     "Profile": {
       "properties": {
@@ -66,7 +66,7 @@
         "shapes",
         "version"
       ],
-      "description": "A Profile describes an owned URI scheme as data: PlexusOne's \"prn\" scheme is one instance of this format, defined in plexusone-standards, not in this package."
+      "description": "A Profile describes an owned URI scheme as data."
     },
     "ResourceTypeRegistry": {
       "properties": {
@@ -175,7 +175,7 @@
         },
         "required": {
           "type": "boolean",
-          "description": "Required, when true, means every reference to an invocable resource\nunder this scheme must carry a version or alias suffix — consumers\n(for example crossforge) enforce this for invocation targets, this\npackage only records the policy."
+          "description": "Required, when true, means every reference to an invocable resource\nunder this scheme must carry a version or alias suffix — an\ninvocation layer built on this package enforces that for its\ntargets; this package only records the policy."
         },
         "versionPattern": {
           "type": "string",
@@ -192,5 +192,5 @@
     }
   },
   "title": "resourceref Scheme Profile",
-  "description": "Data-driven definition of an owned URI scheme (resourceref/scheme.Profile). A namespace owner's own scheme instance — for example PlexusOne's \"prn\" scheme — is a document conforming to this schema, defined in that owner's standards repository."
+  "description": "Data-driven definition of an owned URI scheme (resourceref/scheme.Profile). A namespace owner's own scheme instance is a document conforming to this schema, defined wherever that owner keeps its own standards."
 }

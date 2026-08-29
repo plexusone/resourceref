@@ -31,8 +31,8 @@ untouched; there is no translation layer for external resources.
 ```text
 arn:aws:s3:::customer-data                  (AWS's own reference — pass through)
 spiffe://prod.example.com/ns/api/sa/default  (SPIFFE's own reference — pass through)
-https://github.com/plexusone/dashforge       (GitHub's own reference — pass through)
-prn://plexusone/dashforge/org_7f3/notebook/nb_churn@prod   (an owned reference)
+https://github.com/acme/billing-service      (GitHub's own reference — pass through)
+prn://acme/billing/org_7f3/invoice/inv_9c3@prod   (an owned reference)
 ```
 
 Once independently developed systems agree on this one reference format,
@@ -65,15 +65,13 @@ identity pitfall to avoid.
 
 - **No resolution.** Identifier is not locator; turning a reference into an
   endpoint is a resolver's job, not this module's.
-- **No specific scheme.** PlexusOne's own `prn` scheme is an *instance*
-  defined in [plexusone-standards](https://github.com/plexusone/plexusone-standards),
-  not in this repository — the relationship mirrors
-  [design-system-spec](https://github.com/plexusone/design-system-spec) and
-  [api-style-spec](https://github.com/plexusone/api-style-spec) to their
-  respective PlexusOne instances.
+- **No specific scheme.** This module ships the mechanism only — a
+  reference test fixture, not a real scheme. Defining your own owned
+  scheme (its authorities, path shapes, resource types) is entirely up to
+  whoever adopts it; see [docs/embedding.md](docs/embedding.md).
 - **No invocation or authorization.** Calling, authorizing, or executing
-  against a reference is [crossforge](https://github.com/plexusone/crossforge)'s
-  concern, built on top of this module.
+  against a reference is the concern of a layer built on top of this
+  module, not this module's own.
 
 ## Design basis
 

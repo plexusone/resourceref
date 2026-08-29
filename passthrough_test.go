@@ -18,9 +18,9 @@ var passthroughCorpus = []string{
 	"spiffe://example.org/ns/prod/sa/api",
 	"spiffe://prod.example.com/ns/api/sa/default",
 
-	// HTTPS URL (GitHub, as used elsewhere in the ecosystem for lineage)
-	"https://github.com/plexusone/dashforge",
-	"https://github.com/plexusone/dashforge/blob/main/README.md",
+	// HTTPS URL (GitHub, commonly used for source-repository lineage)
+	"https://github.com/acme/billing-service",
+	"https://github.com/acme/billing-service/blob/main/README.md",
 
 	// URN (RFC 8141)
 	"urn:isbn:0451450523",
@@ -31,10 +31,10 @@ var passthroughCorpus = []string{
 	"mailto:jane@example.com",
 	"tel:+1-816-555-1212",
 
-	// PlexusOne's own owned scheme (defined in plexusone-standards; this
-	// package validates only URI syntax, not scheme-specific structure)
-	"prn://plexusone/dashforge/org_7f3/notebook/nb_churn@prod",
-	"prn://productbuildershq/roadmap/RMI-142",
+	// An owned scheme instance (defined by whoever adopts this package;
+	// it validates only URI syntax here, not scheme-specific structure)
+	"prn://acme/billing/org_7f3/invoice/inv_9c3@prod",
+	"prn://opensource/project/ISSUE-142",
 }
 
 func TestPassthroughFidelity(t *testing.T) {
@@ -53,11 +53,11 @@ func TestPassthroughFidelity(t *testing.T) {
 
 func TestPassthroughSchemesDistinct(t *testing.T) {
 	want := map[string]string{
-		"arn:aws:s3:::customer-data":                               "arn",
-		"spiffe://example.org/ns/prod/sa/api":                      "spiffe",
-		"https://github.com/plexusone/dashforge":                   "https",
-		"urn:isbn:0451450523":                                      "urn",
-		"prn://plexusone/dashforge/org_7f3/notebook/nb_churn@prod": "prn",
+		"arn:aws:s3:::customer-data":                      "arn",
+		"spiffe://example.org/ns/prod/sa/api":             "spiffe",
+		"https://github.com/acme/billing-service":         "https",
+		"urn:isbn:0451450523":                             "urn",
+		"prn://acme/billing/org_7f3/invoice/inv_9c3@prod": "prn",
 	}
 	for s, wantScheme := range want {
 		if got := MustParse(s).Scheme(); got != wantScheme {

@@ -41,9 +41,9 @@ func (p *Profile) Validate(ref resourceref.ResourceRef) error {
 }
 
 // Split validates ref against p and returns its typed decomposition.
-// Callers built on top of a profile (crossforge, a forge) should always
-// use Split rather than re-parsing a reference's raw string themselves —
-// that is the entire reason a profile exists.
+// Callers built on top of a profile should always use Split rather than
+// re-parsing a reference's raw string themselves — that is the entire
+// reason a profile exists.
 func (p *Profile) Split(ref resourceref.ResourceRef) (Parts, error) {
 	return p.match(ref)
 }
@@ -60,9 +60,9 @@ func (p *Profile) match(ref resourceref.ResourceRef) (Parts, error) {
 	// Parse guarantees — so this reparse cannot fail for any validly
 	// constructed ResourceRef. Re-deriving structure here, rather than
 	// exposing Host()/PathSegments() on ResourceRef itself, keeps that
-	// type's public surface exactly what RMI-RESOURCEREF-002 shipped: the
-	// profile engine is the one thing in this module that needs URI
-	// structure, so it owns parsing it.
+	// type's public surface small and stable: the profile engine is the
+	// one thing in this module that needs URI structure, so it owns
+	// parsing it.
 	u, err := url.Parse(ref.String())
 	if err != nil {
 		return Parts{}, fmt.Errorf("%w: canonical form failed to reparse: %w", ErrNoMatch, err)

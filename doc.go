@@ -16,15 +16,13 @@
 // The scheme subpackage defines owned URI schemes as data (a Profile), not
 // code: a SPIFFE-strict URI subset, an authority (namespace owner) registry,
 // per-authority path shapes, resource-type registries, and version/alias
-// suffix grammar. Namespace owners (for example PlexusOne's "prn" scheme)
-// define profiles in their own standards repositories; this package supplies
-// only the mechanism.
+// suffix grammar. Namespace owners define their own profiles; this package
+// supplies only the mechanism, not any specific scheme instance.
 //
 // # What this package deliberately does not do
 //
 // It does not resolve references to locations — identifier is not locator.
 // It does not authorize, invoke, or execute anything against a reference.
-// It does not define any specific scheme instance, including PlexusOne's own
-// "prn" scheme. Those concerns belong to resolvers, invocation contracts, and
-// standards repositories built on top of this module.
+// It does not define any specific scheme instance. Those concerns belong
+// to resolvers, invocation contracts, and whatever adopts this module.
 package resourceref
