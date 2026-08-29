@@ -1,0 +1,42 @@
+{
+  "scheme": "prn",
+  "uriSubset": {
+    "allowQuery": false,
+    "allowFragment": false,
+    "allowUserinfo": false,
+    "allowPort": false,
+    "segmentPattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+  },
+  "authorities": [
+    {"name": "plexusone", "description": "PlexusOne, Inc. — resourceref reference-profile fixture"},
+    {"name": "productbuildershq", "description": "ProductBuildersHQ — resourceref reference-profile fixture"}
+  ],
+  "shapes": [
+    {
+      "name": "tenant-scoped",
+      "segments": [
+        {"role": "app"},
+        {"role": "org"},
+        {"role": "resourceType"},
+        {"role": "id"}
+      ]
+    },
+    {
+      "name": "ecosystem-artifact",
+      "segments": [
+        {"role": "resourceType"},
+        {"role": "id", "rest": true}
+      ]
+    }
+  ],
+  "resourceTypes": [
+    {"authority": "plexusone", "app": "dashforge", "types": ["notebook", "notebook-run"]},
+    {"authority": "plexusone", "app": "actionforge", "types": ["workflow", "workflow-run"]}
+  ],
+  "version": {
+    "separator": "@",
+    "required": false,
+    "versionPattern": "^[0-9]+$",
+    "aliasPattern": "^[a-z][a-z0-9-]*$"
+  }
+}

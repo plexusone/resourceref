@@ -123,6 +123,10 @@ func TestLoadStructuralErrors(t *testing.T) {
 			json: `{"scheme":"prn","authorities":[{"name":"a"}],"shapes":[{"name":"s","segments":[{"role":"id","rest":true},{"role":"resourceType"}]}]}`,
 		},
 		{
+			name: "duplicate role within one shape",
+			json: `{"scheme":"prn","authorities":[{"name":"a"}],"shapes":[{"name":"s","segments":[{"role":"resourceType"},{"role":"resourceType"}]}]}`,
+		},
+		{
 			name: "two rest segments",
 			json: `{"scheme":"prn","authorities":[{"name":"a"}],"shapes":[{"name":"s","segments":[{"role":"resourceType"},{"role":"id","rest":true}]},{"name":"s2","segments":[{"role":"resourceType"},{"role":"id","rest":true},{"role":"id","rest":true}]}]}`,
 		},

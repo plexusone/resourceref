@@ -103,6 +103,7 @@ func validateShape(s Shape) error {
 	}
 
 	restIndex := -1
+	seenRoles := make(map[string]bool, len(s.Segments))
 	for i, seg := range s.Segments {
 		switch seg.Role {
 		case RoleApp, RoleOrg, RoleResourceType, RoleID:
@@ -110,6 +111,13 @@ func validateShape(s Shape) error {
 		default:
 			return fmt.Errorf("segments[%d]: unknown role %q", i, seg.Role)
 		}
+		if seenRoles[seg.Role] {
+			// A shape must not use the same role twice: Split assigns one
+			// Parts field per role, so a second occurrence would silently
+			// overwrite the first rather than surface as a mismatch.
+			return fmt.Errorf("segments[%d]: role %q already used earlier in this shape", i, seg.Role)
+		}
+		seenRoles[seg.Role] = true
 		if seg.Rest {
 			if seg.Role != RoleID {
 				return fmt.Errorf("segments[%d]: only an %q segment may set rest", i, RoleID)
