@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/plexusone/resourceref/main/schema/profile.schema.json",
+  "$ref": "#/$defs/Profile",
+  "$defs": {
+    "Authority": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name is the authority's URI host value."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description documents who owns this namespace and what it is for."
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "description": "An Authority is a registered namespace owner permitted as the host component of a reference under a Profile's scheme, for example \"plexusone\" or \"productbuildershq\"."
+    },
+    "Profile": {
+      "properties": {
+        "scheme": {
+          "type": "string",
+          "description": "Scheme is the URI scheme this profile governs, e.g. \"prn\". It must\nmatch the RFC 3986 scheme grammar: a letter followed by letters,\ndigits, \"+\", \"-\", or \".\"."
+        },
+        "uriSubset": {
+          "$ref": "#/$defs/URISubset",
+          "description": "URISubset constrains which URI components an owned reference under\nthis scheme may use."
+        },
+        "authorities": {
+          "items": {
+            "$ref": "#/$defs/Authority"
+          },
+          "type": "array",
+          "description": "Authorities is the registry of namespace owners permitted as the\nURI host component of a reference under this scheme."
+        },
+        "shapes": {
+          "items": {
+            "$ref": "#/$defs/Shape"
+          },
+          "type": "array",
+          "description": "Shapes are the permitted path-segment structures, tried in order;\nthe first shape whose segment count matches a reference's path wins."
+        },
+        "resourceTypes": {
+          "items": {
+            "$ref": "#/$defs/ResourceTypeRegistry"
+          },
+          "type": "array",
+          "description": "ResourceTypes optionally registers known resource-type values per\nauthority (and, for tenant-scoped shapes, per app). A reference\nwhose (authority, app) pair has no registry entry here is not\nrestricted — the registry is opt-in and additive, not a closed list\nthat must be updated before a new type can be used."
+        },
+        "version": {
+          "$ref": "#/$defs/VersionGrammar",
+          "description": "Version defines the \"@version\" / \"@alias\" suffix grammar applied to\na reference's final path segment."
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "scheme",
+        "uriSubset",
+        "authorities",
+        "shapes",
+        "version"
+      ],
+      "description": "A Profile describes an owned URI scheme as data: PlexusOne's \"prn\" scheme is one instance of this format, defined in plexusone-standards, not in this package."
+    },
+    "ResourceTypeRegistry": {
+      "properties": {
+        "authority": {
+          "type": "string",
+          "description": "Authority is the namespace owner this entry applies to; it must be\none of the [Profile]'s registered Authorities."
+        },
+        "app": {
+          "type": "string",
+          "description": "App scopes this entry to one application's resource types under a\ntenant-scoped shape. Empty applies to shapes with no app segment\n(ecosystem artifacts)."
+        },
+        "types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "Types is the set of permitted resourceType segment values for this\n(Authority, App) pair."
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "authority",
+        "types"
+      ],
+      "description": "A ResourceTypeRegistry entry restricts the resourceType segment for references scoped to one authority (and, for tenant-scoped shapes, one app) to a known set of values."
+    },
+    "SegmentSpec": {
+      "properties": {
+        "role": {
+          "type": "string",
+          "description": "Role is the meaning of this segment: one of RoleApp, RoleOrg,\nRoleResourceType, or RoleID."
+        },
+        "rest": {
+          "type": "boolean",
+          "description": "Rest marks this as the shape's final segment, capturing one or more\nremaining path segments (joined by \"/\") rather than exactly one.\nOnly RoleID segments may set Rest."
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "role"
+      ],
+      "description": "A SegmentSpec is one path segment of a Shape."
+    },
+    "Shape": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name identifies the shape for diagnostics, e.g. \"tenant-scoped\"."
+        },
+        "segments": {
+          "items": {
+            "$ref": "#/$defs/SegmentSpec"
+          },
+          "type": "array",
+          "description": "Segments describes the path, in order, after the authority. At most\none segment may set Rest to true, and it must be the last element."
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name",
+        "segments"
+      ],
+      "description": "A Shape is one permitted path-segment structure for references under a Profile's scheme, for example a tenant-scoped shape ({app}/{org}/{resourceType}/{id}) or an ecosystem-artifact shape ({resourceType}/{id...})."
+    },
+    "URISubset": {
+      "properties": {
+        "allowQuery": {
+          "type": "boolean",
+          "description": "AllowQuery permits a \"?query\" component on references under this\nscheme."
+        },
+        "allowFragment": {
+          "type": "boolean",
+          "description": "AllowFragment permits a \"#fragment\" component."
+        },
+        "allowUserinfo": {
+          "type": "boolean",
+          "description": "AllowUserinfo permits a \"user:pass@\" component in the authority."
+        },
+        "allowPort": {
+          "type": "boolean",
+          "description": "AllowPort permits an explicit \":port\" component in the authority."
+        },
+        "segmentPattern": {
+          "type": "string",
+          "description": "SegmentPattern is a regular expression every authority and\nnon-version-suffixed path segment must match. Empty means no\nadditional charset restriction beyond valid URI syntax."
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "allowQuery",
+        "allowFragment",
+        "allowUserinfo",
+        "allowPort"
+      ],
+      "description": "URISubset constrains a scheme to a stricter subset of general URI syntax, following the SPIFFE ID specification's lead: an owned reference scheme should say plainly which components are meaningful, rather than inheriting the full generality of RFC 3986."
+    },
+    "VersionGrammar": {
+      "properties": {
+        "separator": {
+          "type": "string",
+          "description": "Separator is the character (or short string) that introduces the\nsuffix, e.g. \"@\". Empty means this scheme has no version suffix\ngrammar at all."
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Required, when true, means every reference to an invocable resource\nunder this scheme must carry a version or alias suffix — consumers\n(for example crossforge) enforce this for invocation targets, this\npackage only records the policy."
+        },
+        "versionPattern": {
+          "type": "string",
+          "description": "VersionPattern is a regular expression matching an immutable\nversion token."
+        },
+        "aliasPattern": {
+          "type": "string",
+          "description": "AliasPattern is a regular expression matching a mutable alias\ntoken."
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "description": "VersionGrammar defines the \"@version\" / \"@alias\" suffix grammar applied to a reference's final path segment, distinguishing an immutable version (e.g."
+    }
+  },
+  "title": "resourceref Scheme Profile",
+  "description": "Data-driven definition of an owned URI scheme (resourceref/scheme.Profile). A namespace owner's own scheme instance — for example PlexusOne's \"prn\" scheme — is a document conforming to this schema, defined in that owner's standards repository."
+}

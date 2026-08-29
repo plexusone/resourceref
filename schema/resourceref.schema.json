@@ -1,0 +1,9 @@
+{
+  "$id": "https://raw.githubusercontent.com/plexusone/resourceref/main/schema/resourceref.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "A resourceref.ResourceRef, encoded as its canonical URI string (RFC 3986). Embed this fragment via $ref for any JSON property typed as a resource reference.",
+  "format": "uri",
+  "minLength": 1,
+  "title": "ResourceRef",
+  "type": "string"
+}
