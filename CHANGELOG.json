@@ -1,0 +1,28 @@
+{
+  "irVersion": "1.0",
+  "project": "resourceref",
+  "repository": "https://github.com/plexusone/resourceref",
+  "versioning": "semver",
+  "commitConvention": "conventional",
+  "maintainers": ["johnwang"],
+  "releases": [
+    {
+      "version": "v0.1.0",
+      "date": "2026-11-08",
+      "commit": "f0d0ba3",
+      "highlights": [
+        { "description": "Initial release: ResourceRef, a canonical and comparable RFC 3986 resource reference that passes owner-canonical URIs (ARN, SPIFFE, HTTPS, URN) through untouched, and the scheme engine for defining owned URI schemes as data" }
+      ],
+      "added": [
+        { "description": "Stdlib-only module scaffolding with Go CI, lint and CodeQL workflows, under the Apache-2.0 license", "commit": "e3d48ac" },
+        { "description": "ResourceRef: Parse, String, Equal and text/JSON marshaling as a plain string, with conservative RFC 3986 canonicalization (case, percent-encoding, dot segments), an external-URI passthrough corpus and fuzz tests for canonical-form idempotence", "commit": "bec6e9b" },
+        { "description": "scheme.Profile format and Load: URI subset constraints, authority registry, path shapes, resource-type registries and version/alias grammar, with a JSON Schema generated from the Go types and embedded in the schema package", "commit": "c02e3f3" },
+        { "description": "Profile.Validate and Profile.Split: match a ResourceRef against a profile and return its typed Parts (authority, app, org, resourceType, id, version), with a reference test profile and golden corpus", "commit": "6a8ff79" }
+      ],
+      "documentation": [
+        { "description": "docs/embedding.md: how to add a resource-reference field to an IR, in Go and in hand-written or generated JSON Schema, and how to keep logical and instance identity apart", "commit": "269e06c" },
+        { "description": "README, package docs and specs use neutral placeholder names in every example", "commit": "f0d0ba3" }
+      ]
+    }
+  ]
+}
