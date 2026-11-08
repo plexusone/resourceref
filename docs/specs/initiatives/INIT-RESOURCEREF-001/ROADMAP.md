@@ -30,5 +30,5 @@ lives here, though both are what Phase 3 validates this module against.
 
 - [x] `RMI-RESOURCEREF-005` Embedding guidance and schemas for IR authors: ref-field JSON Schema fragment, a general embedding guide, logical-vs-instance identity guidance
   - Depends on: `RMI-RESOURCEREF-004`
-- [ ] `RMI-RESOURCEREF-006` Stabilization: fold feedback from a real scheme instance and a real downstream consumer; tag v0.x with both building against the tag
+- [x] `RMI-RESOURCEREF-006` Stabilization: fold feedback from a real scheme instance and a real downstream consumer; tag v0.x with both building against the tag
   - Depends on: `RMI-RESOURCEREF-004`
